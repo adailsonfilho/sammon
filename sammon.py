@@ -1,4 +1,4 @@
-def sammon(x, n = 2, display = 2, inputdist = 'raw', maxhalves = 20, maxiter = 500, tolfun = 1e-9, init = 'pca'):
+def sammon(x, n = 2, display = 2, inputdist = 'raw', maxhalves = 20, maxiter = 500, tolfun = 1e-9, init = 'pca', distancefunc = None):
 
     import numpy as np 
 
@@ -65,12 +65,15 @@ def sammon(x, n = 2, display = 2, inputdist = 'raw', maxhalves = 20, maxiter = 5
         d = np.sqrt( ((a**2).sum(axis=1)*np.ones([1,b.shape[0]]).T).T + \
             np.ones([a.shape[0],1])*(b**2).sum(axis=1)-2*(np.dot(a,b.T)))
         return d
+        
+    if distancefunc is None:
+   	    distancefunc = euclid
 
     # Create distance matrix unless given by parameters
     if inputdist == 'distance':
-        D = x
+	    D = x
     else:
-        D = euclid(x,x)
+	    D = distancefunc(x,x)
 
     # Remaining initialisation
     N = x.shape[0] # hmmm, shape[1]?
@@ -84,7 +87,7 @@ def sammon(x, n = 2, display = 2, inputdist = 'raw', maxhalves = 20, maxiter = 5
     else:
         y = np.random.normal(0.0,1.0,[N,n])
     one = np.ones([N,n])
-    d = euclid(y,y) + np.eye(N)
+    d = distancefunc(y,y) + np.eye(N)
     dinv = 1. / d # Returns inf where d = 0. 
     dinv[np.isinf(dinv)] = 0 # Fix by replacing inf with 0 (default Matlab behaviour).
     delta = D-d 
@@ -110,7 +113,7 @@ def sammon(x, n = 2, display = 2, inputdist = 'raw', maxhalves = 20, maxiter = 5
         for j in range(maxhalves):
             s_reshape = s.reshape(2,len(s)/2).T
             y = y_old + s_reshape
-            d = euclid(y, y) + np.eye(N)
+            d = distancefunc(y, y) + np.eye(N)
             dinv = 1 / d # Returns inf where D = 0. 
             dinv[np.isinf(dinv)] = 0 # Fix by replacing inf with 0 (default Matlab behaviour).
             delta = D - d
