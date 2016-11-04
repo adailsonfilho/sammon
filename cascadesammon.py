@@ -28,7 +28,7 @@ import numpy as np
 
 	"""
 
-def iterativesammon(data, framelapse = 1, init='pca', verbose = True, distancefunc = None):
+def cascadesammon(data, framelapse = 1, init='pca', verbose = True, distancefunc = None):
 	
 	"""
 	Args description:

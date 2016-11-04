@@ -81,11 +81,17 @@ def sammon(x, n = 2, display = 2, inputdist = 'raw', maxhalves = 20, maxiter = 5
     D = D + np.eye(N)
     Dinv = 1 / D # Returns inf where D = 0.
     Dinv[np.isinf(Dinv)] = 0 # Fix by replacing inf with 0 (default Matlab behaviour).
-    if init == 'pca':
-        [UU,DD,_] = np.linalg.svd(x)
-        y = UU[:,:n]*DD[:n] 
+    
+    if init is not None:
+        if init == 'pca':
+            [UU,DD,_] = np.linalg.svd(x)
+            y = UU[:,:n]*DD[:n]
+        elif init == 'random':
+            y = np.random.normal(0.0, 1.0, [N,n])
+        else:
+            y = init
     else:
-        y = np.random.normal(0.0,1.0,[N,n])
+        raise('Argument Null Exception! "init" variable cannot be null brow!')
     one = np.ones([N,n])
     d = distancefunc(y,y) + np.eye(N)
     dinv = 1. / d # Returns inf where d = 0. 
